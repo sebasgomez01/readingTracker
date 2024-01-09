@@ -1,0 +1,13 @@
+La idea es tener los componentes:
+
+
+- NavBar: La barra de navegación en la cual va a estar el nombre de la aplicación 2 botones: uno para log in y otro para register 
+- AddItem: En este componente se va a encontrar el botón que sirve para agregar un libro, cada vez que se apriete este botón se tiene que esconder el mismo botón y mostrar el modal para introducir los datos del libro
+- Modal: como dice su nombre este es el modal en el cual se van a introducir los datos del libro, va a tener un form con los campos title, author, pages, read y dos botones: save, que guarda la información y crea un nuevo item con los datos del formulario, y cancel que cancela la operación y hace que el modal desparezca y vuelva a aparecer el botón para agregar un nuevo libro  
+- BookItem: este va a ser donde se muestra la información de cada libro y va a tener 2 botones: read/unread y delete
+- 
+
+Todos estos componentes van a ser hijos de app.vue, así que el árbol de componentes solo va a tener 2 niveles: 
+
+                               App.vue
+                 NavBar.vue   AddItem.vue  Modal.vue BookItem.vue
