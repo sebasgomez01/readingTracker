@@ -17,7 +17,8 @@
     title: '',
     author: '',
     pages: null,
-    read: false
+    read: false,
+    id: null
   }
 
   // función que emite el evento saveData
@@ -28,9 +29,42 @@
     title: '',
     author: '',
     pages: null,
-    read: false
+    read: false,
+    id: null
+    }
   }
-  }
+
+
+  // Código para hacer la petición POST al enviar el formulario 
+
+    import axios from 'axios';
+
+    const submitForm = async () => {
+      try {
+        // Obtengo los datos del formulario
+        // const formData = bookData
+
+        // Realizo la petición POST
+        const response = await axios.post('http://127.0.0.1:8000/backEnd/create_book/', bookData);
+
+        // Manejo la respuesta 
+        console.log(response.data);
+        // Me guardo en bookData el id que le asignó la base de datos
+        bookData.id = response.data.id
+        console.log(bookData) 
+
+        // Ejecuto la función saveDataEvent que emite el evento saveData para que lo escuche el componente App.vue, y restablece los valores iniciales de bookData 
+        saveDataEvent();
+
+        
+
+       
+      } catch (error) {
+        // Maneja el error según tus necesidades
+        console.error(error);
+      }
+    };
+
   /* 
     Comentario acerca de la lógica del componente: Me surge la duda de si es necesario hacer que bookData sea un ref, en mi criterio esto no es necesario y justamente busqué evitarlo para poder manejar todos los refs desde App.vue, pues no creo que sea necesario volver a renderizar cada vez que se cambien los valores del formulario, entonces lo que hago es que al enviar los datos en el evento al pulsar save establezco bookData en los valores iniciales y entonces cuando se vuelve a renderizar el formulario los campos están en blanco. ¡OJO! ESTO SOLO ES POSIBLE PORQUE EL FORMULARIO SE ESCONDE LUEGO DE ENVIAR LA INFO PUES ES UN MODAL, EN CASO DE QUE NO SEA ASÍ QUIZÁS SI SEA NECESARIO QUE bookData SEA UN REF O BUSCAR OTRA FORMA DE LIMPIAR LOS DATOS DEL FORM
   */
@@ -39,7 +73,7 @@
 <template>
   <div>
     
-    <form @submit.prevent>
+    <form @submit.prevent="submitForm">
       <h1>Add book</h1>
       <label>
         <input type="text" placeholder="Title" v-model="bookData.title" >
@@ -53,7 +87,7 @@
       <label id="checkbox">
         <input type="checkbox" v-model="bookData.read" id="checkboxInput"> Read?
       </label>
-      <button @click="saveDataEvent"> Save </button>
+      <button type="submit"> Save </button>
       <button @click="cancelEvent"> Cancel </button>
     </form>
   </div>

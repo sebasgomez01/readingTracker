@@ -1,4 +1,16 @@
 <script setup>
+  import { ref, defineEmits } from 'vue'
+
+  // Defino los eventos que va a emitir a el componente a su padre
+  const emit = defineEmits(['showLogIn', 'showRegister'])
+
+  function showLogInEvent() {
+    emit('showLogIn')
+  }
+
+  function showRegisterEvent() {
+    emit('showRegister')
+  }
 
 </script>
 
@@ -9,8 +21,8 @@
     </div>
     <div id="buttonsDiv">
       
-      <button> Register </button>
-      <button> Log In   </button>
+      <button @click="showRegisterEvent"> Register </button>
+      <button @click="showLogInEvent"> Log In   </button>
     </div>
   </div>
 </template>

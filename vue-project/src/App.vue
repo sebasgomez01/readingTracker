@@ -3,6 +3,8 @@ import NavBar from './components/NavBar.vue'
 import AddItem from './components/AddItem.vue'
 import Modal from './components/Modal.vue'
 import BookItem from './components/BookItem.vue'
+import LogInForm from './components/LogInForm.vue'
+import RegisterForm from './components/RegisterForm.vue'
 
 import { ref } from 'vue'
 
@@ -26,15 +28,15 @@ function saveData(data) {
   modifyShowModal()
 }
 
-function deleteItem(title) {
+function deleteItem(id) {
   // Filtra la lista y crea una nueva lista sin el objeto con el título proporcionado
-  const updatedCollectionItems = collectionItems.value.filter(item => item.title !== title);
+  const updatedCollectionItems = collectionItems.value.filter(item => item.id !== id);
 
   // Verifica si se eliminó algún elemento
   if (updatedCollectionItems.length !== collectionItems.length) {
-    console.log(`Objeto con título "${title}" eliminado.`);
+    console.log(`Objeto con el id "${id}" eliminado.`);
   } else {
-    console.log(`No se encontró un objeto con título "${title}".`);
+    console.log(`No se encontró un objeto con el id "${id}".`);
   }
 
   // Devuelve la nueva lista sin modificar la original
@@ -42,14 +44,40 @@ function deleteItem(title) {
   collectionItems.value = updatedCollectionItems
 } 
 
+const showLogInForm = ref(false);
+const showRegisterForm = ref(false);
+
+function changeShowLogInValue() {
+  showLogInForm.value = !showLogInForm.value; 
+}
+
+function changeShowRegisterValue() {
+  showRegisterForm.value = !showRegisterForm.value; 
+}
+
+function changeBothFormValues() {
+  showLogInForm.value = !showLogInForm.value; 
+  showRegisterForm.value = !showRegisterForm.value; 
+}
+
 </script>
 
 <template>
-  <NavBar />
-  <AddItem v-if="!showModal" @add-book="modifyShowModal" />
+  <NavBar v-if="!showLogInForm && !showRegisterForm" 
+    @show-log-in="changeShowLogInValue"
+    @show-register="changeShowRegisterValue"
+  />
+  <AddItem v-if="!showModal && !showLogInForm && !showRegisterForm" @add-book="modifyShowModal" />
   <Modal v-if="showModal" @save-data="saveData" @cancel="modifyShowModal" />
-  <div>
+  <LogInForm v-if="showLogInForm" @get-back-home="changeShowLogInValue" 
+    @go-to-register="changeBothFormValues"
+  />
+  <RegisterForm v-if="showRegisterForm" @get-back-home="changeShowRegisterValue"
+    @go-to-log-in="changeBothFormValues"
+  />
+  <div v-if="!showLogInForm && !showRegisterForm">
     <h1>Your colletion:</h1>
+
   </div>
   <div id="itemsContainer">  
       <BookItem v-for="item in collectionItems"  v-bind="item" @delete-item="deleteItem" />
