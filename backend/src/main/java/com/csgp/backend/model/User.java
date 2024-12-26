@@ -7,7 +7,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.GeneratedValue;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Collection;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -15,10 +17,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+
 @Entity
 @Table(name = "users") // esto es porque la palabra user está reservada en PostgreSQL y no se puede tener una tabla con ese nombre
 @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-public class User  {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -45,6 +52,42 @@ public class User  {
         this.passwordHash = passwordHash;
     }
 
+    /*
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        this.roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName())));
+        return authorities;
+    }
+    */
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Retornar una lista con una autoridad genérica
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -62,7 +105,8 @@ public class User  {
         this.username = username;
     }
 
-    public String getPasswordHash() {
+    @Override
+    public String getPassword() {
         return passwordHash;
     }
 
