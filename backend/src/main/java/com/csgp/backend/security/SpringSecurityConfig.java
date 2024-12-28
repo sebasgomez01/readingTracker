@@ -30,8 +30,8 @@ public class SpringSecurityConfig {
             .csrf().disable()
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth ->
-            auth.requestMatchers("/public/**", "/user/**").permitAll()
-            .requestMatchers("/admin/**").hasAuthority("ADMIN")) ;
+            auth.requestMatchers("/login/**").permitAll());
+            //.requestMatchers("/admin/**").hasAuthority("ADMIN")) ;
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

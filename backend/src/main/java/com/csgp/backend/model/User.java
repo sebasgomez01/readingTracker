@@ -110,7 +110,7 @@ public class User implements UserDetails {
         return passwordHash;
     }
 
-    public void setPasswordHash(String passwordHash) {
+    public void setPassword(String passwordHash) {
         this.passwordHash = passwordHash;
     }
 }
