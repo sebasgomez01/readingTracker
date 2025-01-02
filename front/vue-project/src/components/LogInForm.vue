@@ -1,4 +1,8 @@
 <script setup>
+	import axios from 'axios'
+	const API_URL = import.meta.env.VITE_API_URL;
+	import apiClient from '@/axiosConfig';
+
 	const userData = {
 		username: '',
 		password: ''
@@ -17,6 +21,22 @@
 	  emit('goToRegister')
 	}
 
+	
+  // Manejar el envío del formulario
+async function handleSubmit(event) {
+  event.preventDefault() // Evita la recarga de la página
+  try {
+    console.log(userData)
+    const response = await apiClient.post('/login/authenticate', userData);
+    console.log('Response:', response);
+	const token = response.headers['authorization']; // O  si está en el header
+    localStorage.setItem('jwt_token', token);
+    console.log('Token saved:', token);
+    getBackHomeEvent();
+  } catch (error) {
+    console.error('Error:', error)
+  }
+}
 
 </script>
 
@@ -24,7 +44,7 @@
 
 	<div>
 		<h1> <a href="#" @click="getBackHomeEvent"> Reading Tracker </a></h1>
-	    <form>
+	    <form @submit="handleSubmit">
 	      <h1>Log In</h1>
 	      <label>
 	        <input type="text" placeholder="Username" v-model="userData.username" >

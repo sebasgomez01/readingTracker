@@ -18,7 +18,6 @@
     author: '',
     pages: null,
     read: false,
-    id: null
   }
 
   // función que emite el evento saveData
@@ -37,15 +36,14 @@
 
   // Código para hacer la petición POST al enviar el formulario 
 
-    import axios from 'axios';
-
+    import apiClient from '@/axiosConfig';
     const submitForm = async () => {
       try {
         // Obtengo los datos del formulario
         // const formData = bookData
 
         // Realizo la petición POST
-        const response = await axios.post('http://127.0.0.1:8000/backEnd/create_book/', bookData);
+        const response = await apiClient.post('/books', bookData);
 
         // Manejo la respuesta 
         console.log(response.data);

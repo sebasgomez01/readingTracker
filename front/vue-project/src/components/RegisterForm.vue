@@ -1,8 +1,11 @@
 <script setup>
+import axios from 'axios'
+const API_URL = import.meta.env.VITE_API_URL;
+import apiClient from '@/axiosConfig';
+
 	const userData = {
 		username: '',
-		password: '',
-    email: ''
+		password: ''
 	}
 
   import { ref, defineEmits } from 'vue'
@@ -18,19 +21,29 @@
     emit('goToLogIn')
   }
 
+  // Manejar el envío del formulario
+async function handleSubmit(event) {
+  event.preventDefault() // Evita la recarga de la página
+  try {
+    console.log(userData)
+    const response = await apiClient.post('/login/register', userData);
+    console.log('Response:', response.data);
+    goToLogInEvent();
+  } catch (error) {
+    console.error('Error:', error)
+  }
+}
+
 </script>
 
 <template>
 	<div>
       <h1> <a href="#" @click="getBackHomeEvent" > Reading Tracker </a></h1>
-	    <form>
+	    <form @submit="handleSubmit">
 	      <h1>Join Us</h1>
 	      <label>
 	        <input type="text" placeholder="Username" v-model="userData.username" >
 	      </label>
-        <label>
-          <input type="email" placeholder="Email" v-model="userData.email" >
-        </label>
 	      <label>
 	        <input type="password" placeholder="Password" v-model="userData.password"> 
 	      </label>
