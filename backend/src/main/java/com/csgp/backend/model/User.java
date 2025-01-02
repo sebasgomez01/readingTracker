@@ -30,12 +30,14 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false, updatable = false)
+    //@JsonIgnore // Ignora este campo al serializar la clase
     private Long id;
 
     @Column(nullable = false)
     private String username;
 
     @Column(nullable = false)
+    //@JsonIgnore // Ignora este campo al serializar la clase
     private String passwordHash;
 
     // Relación oneToMany con Book

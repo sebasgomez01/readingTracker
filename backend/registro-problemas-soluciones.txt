@@ -1,0 +1,47 @@
+1) Problema en la autenticación: Se creaba correctamente el usuario y el token una vez autenticado pero cuando 
+hacía una petición a un endpoint que necesitaba autenticación y mandaba el token generado obtenía un 
+código 403 Forbidden. Al activar 
+logging.level.org.springframework.security=TRACE
+en el application.properties y ver los mensajes entendí algo así como que la petición se rechazaba porque no 
+matcheaba con ningún requestMatcers o algo así.
+
+Se solucionó modificando el Bean SecurityFilterChain en SpringSecurityConfig.java que paso de ser:
+
+@Bean
+    public SecurityFilterChain filterChain (HttpSecurity http) throws Exception {
+        http
+            .csrf().disable()
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth ->
+            auth.requestMatchers("/login/**").permitAll());
+            //.requestMatchers("/admin/**").hasAuthority("ADMIN")) ;
+
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return  http.build();
+    }
+
+
+a esto: 
+
+@Bean
+    public SecurityFilterChain filterChain (HttpSecurity http) throws Exception {
+        http
+            .csrf().disable()
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth ->
+            auth.requestMatchers("/login/**").permitAll()
+            .anyRequest()    
+            .authenticated());
+            //.requestMatchers("/admin/**").hasAuthority("ADMIN")) ;
+
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return  http.build();
+    }
+
+    osea le agregue el anyRequest authenticated
+
+
+2) espacio al final de la url de la petición, me cambiaba la url y hacía la petición a login/register%20 en lugar 
+de a login/register

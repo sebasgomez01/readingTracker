@@ -26,11 +26,17 @@ public class SpringSecurityConfig {
 
      @Bean
     public SecurityFilterChain filterChain (HttpSecurity http) throws Exception {
-        http
-            .csrf().disable()
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth ->
-            auth.requestMatchers("/login/**").permitAll());
+         http
+                 .csrf(csrf -> csrf.disable())
+                 //.csrf(csrf -> {
+                 //   csrf.ignoringRequestMatchers("/login/register", "/login/authenticate");
+                 //   })
+                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                 .authorizeHttpRequests(auth -> auth
+                         .requestMatchers("/login/register").permitAll()
+                         .requestMatchers("/login/authenticate").permitAll()
+                         .anyRequest()
+                         .authenticated());
             //.requestMatchers("/admin/**").hasAuthority("ADMIN")) ;
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
