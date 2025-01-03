@@ -1,12 +1,13 @@
 <script setup>
 	import { ref, defineEmits } from 'vue'
-	import axios from 'axios'
+	const API_URL = import.meta.env.VITE_API_URL;
+	import apiClient from '@/axiosConfig';
 
 	// Declaro los props del componente
 	const props = defineProps(['title', 'author', 'pages', 'read', 'id'])
 
 	// DEfino los eventos que va a emitir a el componente a su padre
-	const emit = defineEmits(['deleteItem'])
+	const emit = defineEmits(['deleteItem', 'updateItem'])
 
 	// me creo un ref utilizando el valor inicial del prop read, pues necesito modificarlo y los props son inmutables. Esto va a controlar los estilos y el contenido del botón read/unread 
 	const readValue = ref(props.read)
@@ -14,33 +15,26 @@
 	// por alguna razón si le paso props.id como segundo parámetro a emit me tira el error "id is not defined" así que probé declarando esta variable y pasandosela de parámetro y ahí si funciona, rarísimo :P
 	const bookID = props.id
 
-	// función que emite el evento para borrar un item y manda el title del ítem a borrar como dato
+	// función que emite el evento para borrar un item y manda el item del ítem a borrar como dato
 	function deleteEvent() {
 		emit('deleteItem', bookID)
 	}
 
-	function changeReadValue() {
+	function changeReadValue(updateBook) {
 		readValue.value = !readValue.value 
+		emit('updateItem', updateBook)
 	}
 
-	// Función para realizar la petición HTTP con el verbo DELETE para eliminar el elemento de la 
-	// base de datos
-
+	// Función para realizar la petición HTTP con el verbo DELETE para eliminar el elemento de la base de datos
 	const deleteElem = async () => {
       try {
-
-    	const apiUrl = 'http://127.0.0.1:8000/backEnd';
-
-
 		// Realizo la petición DELETE
-		axios.delete(`${apiUrl}/${bookID}`)
+		apiClient.delete(`/books/${bookID}`)
 		  .then(response => {
 		    console.log('Libro eliminado correctamente', response.data);
-		    // Realiza acciones adicionales si es necesario
 		  })
 		  .catch(error => {
 		    console.error('Error al eliminar el libro', error);
-		    // Maneja el error de acuerdo a tus necesidades
 		  });
 
   		
@@ -48,29 +42,35 @@
         deleteEvent();
        
       } catch (error) {
-        // Maneja el error según tus necesidades
+        
         console.error(error);
       }
     };
 
     // Función para realizar una petición Http Patch para modificar el estado de read
-
     const updateReadState = async () => {
+		let updateBook = {
+			title: props.title,
+			author: props.author,
+			pages: props.pages,
+			read: !props.read,
+			id: bookID
+		}
+		
+		console.log(updateBook)
 
     	// Primero actualizo los estilos del botón:
-    	changeReadValue();
+    	changeReadValue(updateBook);
 
-    	const apiUrl = 'http://127.0.0.1:8000/backEnd';
-
-    	// Realizo la petición Patch
-		axios.patch(`${apiUrl}/update/${bookID}`)
+		// Realizo la petición Patch
+		apiClient.patch(`books/${bookID}`, updateBook)
 		  .then(response => {
 		    console.log('Libro actualizado correctamente', response.data);
-		    // Realiza acciones adicionales si es necesario
+		    
 		  })
 		  .catch(error => {
 		    console.error('Error al actualizar el libro', error);
-		    // Maneja el error de acuerdo a tus necesidades
+	
 		  });
     	
     }

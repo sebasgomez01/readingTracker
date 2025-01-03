@@ -44,12 +44,24 @@ function deleteItem(id) {
   collectionItems.value = updatedCollectionItems
 } 
 
-const showLogInForm = ref(false);
+const showLogInForm = ref(true);
 const showRegisterForm = ref(false);
 
 function changeShowLogInValue() {
   showLogInForm.value = !showLogInForm.value; 
 }
+
+function updateItem(updateBook) {
+  for(let i = 0; i < collectionItems.value.length; i++) {
+    if(collectionItems.value[i].id == updateBook.id) {
+      console.log("libro actual:", collectionItems.value[i]);
+      collectionItems.value[i] = updateBook;
+      console.log("libro actualizado:", collectionItems.value[i]);
+    }
+  }
+  //collectionItems.value = updatedCollectionItems
+} 
+
 
 function changeShowRegisterValue() {
   showRegisterForm.value = !showRegisterForm.value; 
@@ -76,11 +88,11 @@ function changeBothFormValues() {
     @go-to-log-in="changeBothFormValues"
   />
   <div v-if="!showLogInForm && !showRegisterForm">
-    <h1>Your colletion:</h1>
+    <h1>Your collection:</h1>
 
   </div>
   <div id="itemsContainer">  
-      <BookItem v-for="item in collectionItems"  v-bind="item" @delete-item="deleteItem" />
+      <BookItem v-for="item in collectionItems"  v-bind="item" @delete-item="deleteItem" @update-item="updateItem" />
   </div>
 </template>
 

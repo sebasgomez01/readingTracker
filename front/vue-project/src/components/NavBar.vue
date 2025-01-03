@@ -12,6 +12,10 @@
     emit('showRegister')
   }
 
+  /*
+  <button @click="showRegisterEvent"> Register </button>
+      <button @click="showLogInEvent"> Log In   </button>*/ 
+
 </script>
 
 <template>
@@ -21,8 +25,7 @@
     </div>
     <div id="buttonsDiv">
       
-      <button @click="showRegisterEvent"> Register </button>
-      <button @click="showLogInEvent"> Log In   </button>
+      <button @click="showLogInEvent"> Log Out   </button>
     </div>
   </div>
 </template>

@@ -7,6 +7,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.GeneratedValue;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 
 @Entity
@@ -33,6 +36,7 @@ public class Book {
     // relación con la entidad User para los posts
     @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="user_id")
+    @JsonIgnore
     private User user;
 
     public Book() {

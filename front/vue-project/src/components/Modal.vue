@@ -1,6 +1,6 @@
 <script setup>
   import { defineEmits } from 'vue'
-
+  import apiClient from '@/axiosConfig';
   /* 
     Declaro los dos eventos que va a emitir el componente, saveData que se va a emitir cuando se haga click en el botón save del modal, y cancel que se va a emitir cuando se haga click en el botón 
     cancel del modal
@@ -18,6 +18,7 @@
     author: '',
     pages: null,
     read: false,
+    id: null
   }
 
   // función que emite el evento saveData
@@ -35,8 +36,7 @@
 
 
   // Código para hacer la petición POST al enviar el formulario 
-
-    import apiClient from '@/axiosConfig';
+    
     const submitForm = async () => {
       try {
         // Obtengo los datos del formulario
@@ -44,13 +44,15 @@
 
         // Realizo la petición POST
         const response = await apiClient.post('/books', bookData);
-
+      
         // Manejo la respuesta 
         console.log(response.data);
         // Me guardo en bookData el id que le asignó la base de datos
-        bookData.id = response.data.id
-        console.log(bookData) 
-
+        //id = response.data._links.self // por alguna razón no puedo realizar esta asignación, la variable aparece como undefined
+        //console.log(id)
+        //bookData.id = .split('/')[4]
+        //console.log("id:", bookData.id) 
+        bookData.id = response.data.id;
         // Ejecuto la función saveDataEvent que emite el evento saveData para que lo escuche el componente App.vue, y restablece los valores iniciales de bookData 
         saveDataEvent();
 
