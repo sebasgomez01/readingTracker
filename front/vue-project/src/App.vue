@@ -5,8 +5,10 @@ import Modal from './components/Modal.vue'
 import BookItem from './components/BookItem.vue'
 import LogInForm from './components/LogInForm.vue'
 import RegisterForm from './components/RegisterForm.vue'
+import apiClient from '@/axiosConfig';
 
 import { ref } from 'vue'
+import { walk } from 'vue/compiler-sfc'
 
 // La variable showModal va a controlar si se muestran o no los componentes AddItem y Modal
 // cuando uno se muestra el otro no y viceversa
@@ -47,8 +49,21 @@ function deleteItem(id) {
 const showLogInForm = ref(true);
 const showRegisterForm = ref(false);
 
+const reloadBookLIst = async() => {
+  try {
+    const response = await apiClient.get('/books');
+    console.log(response.data);
+    collectionItems.value = response.data; 
+  } catch(error) {
+    console.error(error);
+  }
+}
+
 function changeShowLogInValue() {
+  reloadBookLIst();
   showLogInForm.value = !showLogInForm.value; 
+  // actualizo la lista de libros haciendo una petición get para obtener los libros de usuario que se logueo
+  
 }
 
 function updateItem(updateBook) {
@@ -65,6 +80,7 @@ function updateItem(updateBook) {
 
 function changeShowRegisterValue() {
   showRegisterForm.value = !showRegisterForm.value; 
+
 }
 
 function changeBothFormValues() {
@@ -72,12 +88,18 @@ function changeBothFormValues() {
   showRegisterForm.value = !showRegisterForm.value; 
 }
 
+function logOutHandler() {
+  collectionItems.value = [];
+}
+
+
 </script>
 
 <template>
   <NavBar v-if="!showLogInForm && !showRegisterForm" 
     @show-log-in="changeShowLogInValue"
     @show-register="changeShowRegisterValue"
+    @log-out="logOutHandler"
   />
   <AddItem v-if="!showModal && !showLogInForm && !showRegisterForm" @add-book="modifyShowModal" />
   <Modal v-if="showModal" @save-data="saveData" @cancel="modifyShowModal" />
@@ -87,11 +109,15 @@ function changeBothFormValues() {
   <RegisterForm v-if="showRegisterForm" @get-back-home="changeShowRegisterValue"
     @go-to-log-in="changeBothFormValues"
   />
-  <div v-if="!showLogInForm && !showRegisterForm">
+  <div v-if="!showLogInForm && !showRegisterForm" id="yourCollectionDiv" >
     <h1>Your collection:</h1>
-
+    <div id="buttonsFilterContainer">
+      <button>All</button>
+      <button>Read</button>
+      <button>Unread</button>
+    </div>
   </div>
-  <div id="itemsContainer">  
+  <div id="itemsContainer" v-if="!showLogInForm && !showRegisterForm">  
       <BookItem v-for="item in collectionItems"  v-bind="item" @delete-item="deleteItem" @update-item="updateItem" />
   </div>
 </template>
@@ -103,6 +129,24 @@ function changeBothFormValues() {
     gap: 20px;
   }
 
+  #yourCollectionDiv {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
+  #buttonsFilterContainer {
+
+  }
+
+  button {
+    background-color: seagreen;
+    color:white;
+    font-size: 15px;
+    border-radius: 5px;
+    border-style: none;
+    height: 90%;
+    padding: 10px;
+  }
 
 </style>

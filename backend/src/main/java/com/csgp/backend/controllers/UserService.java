@@ -17,7 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.csgp.backend.dto.BearerToken;
+import com.csgp.backend.model.Token;
 import com.csgp.backend.model.User;
+import com.csgp.backend.repositories.TokenRepository;
 import com.csgp.backend.repositories.UserRepository;
 import com.csgp.backend.security.JwtUtilities;
 
@@ -34,13 +36,15 @@ public class UserService {
     private final UserRepository userRepository ;
     private final PasswordEncoder passwordEncoder ;
     private final JwtUtilities jwtUtilities ;
+    private final TokenRepository tokenRepository;
 
     public UserService(AuthenticationManager authenticationManager, UserRepository userRepository,
-    PasswordEncoder passwordEncoder, JwtUtilities jwtUtilities) {
+    PasswordEncoder passwordEncoder, JwtUtilities jwtUtilities, TokenRepository tokenRepository) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtilities = jwtUtilities;
+        this.tokenRepository = tokenRepository;
     }
 
 
@@ -67,7 +71,7 @@ public class UserService {
             //user.setRoles(Collections.singletonList(role));
             userRepository.save(user);
             //String token = jwtUtilities.generateToken(user.getUsername(), Collections.singletonList("ROLE_USER"));
-            return new ResponseEntity<> ("Usuario creado exitósamente", HttpStatus.OK);
+            return new ResponseEntity<> ("Usuario creado exitósamente", HttpStatus.CREATED);
             //return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + token).header(HttpHeaders.
             //ACCESS_CONTROL_EXPOSE_HEADERS, "Authorization").build();
 
@@ -75,20 +79,54 @@ public class UserService {
         }
 
     public ResponseEntity<?> authenticate(User userData) {
-      Authentication authentication = authenticationManager.authenticate(
+        
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         userData.getUsername(),
                         userData.getPassword()
                 )
         );
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        
         User user = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        
         List<String> rolesNames = Collections.singletonList("ROLE_USER");
-        //user.getRoles().forEach(r-> rolesNames.add(r.getRoleName()));
+        
         String token = jwtUtilities.generateToken(user.getUsername(),rolesNames);
-        //return "User login successful! Token: " + token;
-        return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + token).header(HttpHeaders.
-        ACCESS_CONTROL_EXPOSE_HEADERS, "Authorization").build();
+
+        // primero revoco todos los tokens guardados hasta ahora
+        revokeAllTokenByUser(user);
+        // guardo el nuevo token generado, el único válido
+        saveUserToken(token, user);
+        
+        return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + token).
+                    header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Authorization").build();
     }
+
+    
+
+    private void saveUserToken(String accessToken, User user) {
+        Token token = new Token();
+        token.setAccessToken(accessToken);
+        //token.setRefreshToken(refreshToken);
+        token.setLoggedOut(false);
+        token.setUser(user);
+        tokenRepository.save(token);
+    }
+
+    private void revokeAllTokenByUser(User user) {
+        List<Token> validTokens = tokenRepository.findAllAccessTokensByUser(user.getId());
+        if(validTokens.isEmpty()) {
+            return;
+        }
+
+        validTokens.forEach(t-> {
+            t.setLoggedOut(true);
+        });
+
+        tokenRepository.saveAll(validTokens);
+    }
+
 
 }

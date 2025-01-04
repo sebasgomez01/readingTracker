@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -24,10 +25,14 @@ public class SpringSecurityConfig {
     
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomerUserDetailsService customerUserDetailsService;
+    private final CustomLogoutHandler logoutHandler;
 
-    public SpringSecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, CustomerUserDetailsService customerUserDetailsService) {
+    public SpringSecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+                                CustomerUserDetailsService customerUserDetailsService,
+                                CustomLogoutHandler logoutHandler) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.customerUserDetailsService = customerUserDetailsService;
+        this.logoutHandler = logoutHandler;
     }
 
      @Bean
@@ -46,7 +51,12 @@ public class SpringSecurityConfig {
                          .authenticated());
             //.requestMatchers("/admin/**").hasAuthority("ADMIN")) ;
 
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .logout(l->l
+                        .logoutUrl("/logout")
+                        .addLogoutHandler(logoutHandler)
+                        .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()
+                        ));
 
         return  http.build();
     }

@@ -5,14 +5,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.csgp.backend.repositories.TokenRepository;
 
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.Instant;
@@ -32,6 +27,12 @@ public class JwtUtilities {
     @Value("${jwt.jwtExpirationTime}")
     private Long jwtExpirationTime;
 
+    private final TokenRepository tokenRepository;
+
+    public JwtUtilities(TokenRepository tokenRepository) {
+        this.tokenRepository = tokenRepository;
+    }    
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -45,9 +46,17 @@ public class JwtUtilities {
     public Date extractExpiration(String token) { return extractClaim(token, Claims::getExpiration); }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String email = extractUsername(token);
-        return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        
+        final String username = extractUsername(token);
+        
+        boolean validToken = tokenRepository
+                .findByAccessToken(token)
+                .map(t -> !t.isLoggedOut())
+                .orElse(false);
+        
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token) && validToken);
     }
+    
     public Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }

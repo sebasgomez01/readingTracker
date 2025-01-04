@@ -1,8 +1,9 @@
 <script setup>
   import { ref, defineEmits } from 'vue'
+  import apiClient from '@/axiosConfig';
 
   // Defino los eventos que va a emitir a el componente a su padre
-  const emit = defineEmits(['showLogIn', 'showRegister'])
+  const emit = defineEmits(['showLogIn', 'showRegister', 'logOut'])
 
   function showLogInEvent() {
     emit('showLogIn')
@@ -10,6 +11,22 @@
 
   function showRegisterEvent() {
     emit('showRegister')
+  }
+
+  function logOutEvent() {
+    emit('logOut')
+  }
+
+  const handleLogOut = async() => {
+    showLogInEvent();
+    logOutEvent();
+    try {
+      const response = await apiClient.get('/logout');
+      console.log(response.status);
+      
+    } catch(error) {
+      console.error(error);
+    }
   }
 
   /*
@@ -25,7 +42,7 @@
     </div>
     <div id="buttonsDiv">
       
-      <button @click="showLogInEvent"> Log Out   </button>
+      <button @click="handleLogOut"> Log Out   </button>
     </div>
   </div>
 </template>
