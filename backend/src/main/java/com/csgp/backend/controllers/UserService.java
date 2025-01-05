@@ -55,7 +55,7 @@ public class UserService {
     
     public ResponseEntity<?> register(User userData) {
         if(userRepository.existsByUsername(userData.getUsername())) { 
-            return  new ResponseEntity<>("username is already taken!", HttpStatus.SEE_OTHER); 
+            return  new ResponseEntity<>("username is already taken!", HttpStatus.CONFLICT); 
         } else { 
             User user = new User();
             user.setUsername(userData.getUsername());

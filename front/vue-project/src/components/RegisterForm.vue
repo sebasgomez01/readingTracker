@@ -1,14 +1,16 @@
 <script setup>
-import axios from 'axios'
-const API_URL = import.meta.env.VITE_API_URL;
-import apiClient from '@/axiosConfig';
+  import apiClient from '@/axiosConfig';
+  import { useRouter, useRoute } from 'vue-router'
+  import { ref, defineEmits } from 'vue'
+  const router = useRouter()
 
 	const userData = {
 		username: '',
 		password: ''
 	}
-
-  import { ref, defineEmits } from 'vue'
+  
+  const usernameError = ref(false);
+  const passwordError = ref(false);
 
   // Defino los eventos que va a emitir a el componente a su padre
   const emit = defineEmits(['getBackHome', 'goToLogIn'])
@@ -19,34 +21,51 @@ import apiClient from '@/axiosConfig';
 
   function goToLogInEvent() {
     emit('goToLogIn')
+    router.replace('/')
   }
 
   // Manejar el envío del formulario
 async function handleSubmit(event) {
-  event.preventDefault() // Evita la recarga de la página
-  try {
-    console.log(userData)
-    const response = await apiClient.post('/login/register', userData);
-    console.log('Response:', response.data);
-    goToLogInEvent();
-  } catch (error) {
-    console.error('Error:', error)
+  event.preventDefault() // Evita la recarga de la página 
+  passwordError.value = false;
+  usernameError.value = false;
+  if(userData.password.length < 8) {
+    passwordError.value = true;
+    return;
   }
+
+  try {
+      console.log(userData)
+      const response = await apiClient.post('/login/register', userData);
+      console.log('Response:', response.data);
+      goToLogInEvent();
+  } catch (error) {
+
+      console.error('Error:', error)
+      console.log('Response', error.response)
+
+      if(error.response.status == 303) {
+        usernameError.value = true;
+      }
+
+    }
 }
 
 </script>
 
 <template>
 	<div>
-      <h1> <a href="#" @click="getBackHomeEvent" > Reading Tracker </a></h1>
+      <h1> <a href="#" @click="goToLogInEvent" > Reading Tracker </a></h1>
 	    <form @submit="handleSubmit">
 	      <h1>Join Us</h1>
 	      <label>
-	        <input type="text" placeholder="Username" v-model="userData.username" >
+	        <input type="text" placeholder="Username" v-model="userData.username" required>
 	      </label>
 	      <label>
-	        <input type="password" placeholder="Password" v-model="userData.password"> 
+	        <input type="password" placeholder="Password" v-model="userData.password" required> 
 	      </label>
+        <p class="errorMsg" v-if="usernameError" >The username is already taken.</p>
+        <p class="errorMsg"  v-if="passwordError" >The password must have at least 8 characters.</p>
 	      <button type="submit"> Register </button>
 	      <p>Already have an account? 
 	      	<a href="#" @click="goToLogInEvent">	Sign In </a>
@@ -89,6 +108,10 @@ async function handleSubmit(event) {
     border-radius: 5px;
     border-style: none;
     padding: 10px;
+  }
+
+  .errorMsg {
+    color: red;
   }
 	
 </style>

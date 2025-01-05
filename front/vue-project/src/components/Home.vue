@@ -1,47 +1,30 @@
 <script setup>
-import NavBar from './components/NavBar.vue'
-import AddItem from './components/AddItem.vue'
-import Modal from './components/Modal.vue'
-import BookItem from './components/BookItem.vue'
-import LogInForm from './components/LogInForm.vue'
-import RegisterForm from './components/RegisterForm.vue'
-import Home from './components/Home.vue'
+import NavBar from './NavBar.vue'
+import AddItem from './AddItem.vue'
+import Modal from './Modal.vue'
+import BookItem from './BookItem.vue'
 import apiClient from '@/axiosConfig';
-import { createMemoryHistory, createRouter } from 'vue-router'
-import { RouterLink, RouterView } from 'vue-router'
-
-
+import LoadingAnimation from './LoadingAnimation.vue'
+import { useRouter, useRoute } from 'vue-router'
 import { ref } from 'vue'
+
+const router = useRouter()
+const route = useRoute()
+
+
 
 
 // La variable showModal va a controlar si se muestran o no los componentes AddItem y Modal
 // cuando uno se muestra el otro no y viceversa
 const showModal = ref(false)
-const showLogInForm = ref(true);
-const showRegisterForm = ref(false);
 const showLoadingAnimation = ref(false);
 
 // Esta variable guarda los items de la colección, es una lista de objetos con los datos de cada libro
 const collectionItems = ref([])
 
-
 function modifyShowModal() {
   showModal.value = !showModal.value
 }
-
-function changeShowLogInValue() {
-  showLogInForm.value = !showLogInForm.value; 
-}
-
-function changeShowRegisterValue() {
-  showRegisterForm.value = !showRegisterForm.value; 
-}
-
-function changeBothFormValues() {
-  showLogInForm.value = !showLogInForm.value; 
-  showRegisterForm.value = !showRegisterForm.value;
-}
-
 
 const reloadBookLIst = async() => {
   try {
@@ -91,19 +74,32 @@ function updateItem(updateBook) {
 
 function succesfullLogin() {
   reloadBookLIst();
-  changeShowLogInValue();
   showLoadingAnimation.value = true;
   setTimeout(() => { showLoadingAnimation.value = false; }, 2000);
 }
 
 function logOutHandler() {
   collectionItems.value = [];
+  router.replace('/');
 }
 
 </script>
 
 <template>
-  <RouterView />
+  <NavBar 
+    
+    @log-out="logOutHandler"
+  />
+  <AddItem @add-book="modifyShowModal" />
+  <Modal v-if="showModal" @save-data="saveData" @cancel="modifyShowModal" />
+  <div id="yourCollectionDiv" >
+    <h1>Your collection:</h1>
+  </div>
+  <LoadingAnimation v-if="showLoadingAnimation"/>
+  <h1>Your collection is currently empty</h1>
+  <div id="itemsContainer" v-if="!showLogInForm && !showRegisterForm">  
+      <BookItem v-if="!showLoadingAnimation" v-for="item in collectionItems"  v-bind="item" @delete-item="deleteItem" @update-item="updateItem" />
+  </div>
 </template>
 
 <style scoped>

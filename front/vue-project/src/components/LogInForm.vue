@@ -2,16 +2,25 @@
 	import axios from 'axios'
 	const API_URL = import.meta.env.VITE_API_URL;
 	import apiClient from '@/axiosConfig';
+  import { ref, defineEmits } from 'vue'
+  //import router from '../router/index.js'; ESTE IMPORT ESTÁ MAL Y NO FUNCIONA, HAY QUE USAR $router SIN IMPORTAR NADA
+
+  import { useRouter, useRoute } from 'vue-router'
+
+  const router = useRouter()
+  const route = useRoute()
+
 
 	const userData = {
 		username: '',
 		password: ''
 	}
 
-	 import { ref, defineEmits } from 'vue'
+  const showLoginError = ref(false);
 
 	// Defino los eventos que va a emitir a el componente a su padre
 	const emit = defineEmits(['getBackHome', 'goToRegister'])
+
 
 	function getBackHomeEvent() {
 	  emit('getBackHome')
@@ -19,6 +28,7 @@
 
 	function goToRegisterEvent() {
 	  emit('goToRegister')
+    router.replace('register')  
 	}
 
 	
@@ -34,6 +44,7 @@ async function handleSubmit(event) {
     console.log('Token saved:', token);
     getBackHomeEvent();
   } catch (error) {
+    showLoginError.value = true;
     console.error('Error:', error)
   }
 }
@@ -43,15 +54,16 @@ async function handleSubmit(event) {
 <template>
 
 	<div>
-		<h1> <a href="#" @click="getBackHomeEvent"> Reading Tracker </a></h1>
+		<h1> <a href="#" > Reading Tracker </a></h1>
 	    <form @submit="handleSubmit">
 	      <h1>Log In</h1>
 	      <label>
-	        <input type="text" placeholder="Username" v-model="userData.username" >
+	        <input type="text" placeholder="Username" v-model="userData.username" required>
 	      </label>
 	      <label>
-	        <input type="password" placeholder="Password" v-model="userData.password"> 
+	        <input type="password" placeholder="Password" v-model="userData.password" required> 
 	      </label>
+        <p class="errorLoginMsg" v-if="showLoginError">Username or password incorrect.Try again please.</p>
 	      <button type="submit"> Sign In </button>
 	      <p>Don't have an account yet? 
 	      	<a a href="#" @click="goToRegisterEvent">	Register now </a>
@@ -96,4 +108,8 @@ async function handleSubmit(event) {
     padding: 10px;
   }
 	
+  .errorLoginMsg {
+    color:red;
+  }
+  
 </style>
