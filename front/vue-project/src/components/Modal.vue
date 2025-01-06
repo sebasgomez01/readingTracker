@@ -5,7 +5,7 @@
     Declaro los dos eventos que va a emitir el componente, saveData que se va a emitir cuando se haga click en el botón save del modal, y cancel que se va a emitir cuando se haga click en el botón 
     cancel del modal
   */
-  const emit = defineEmits(['saveData', 'cancel'])
+  const emit = defineEmits(['saveData', 'cancel', 'sessionExpired'])
 
   // función que emite el evento cancel
   function cancelEvent() {
@@ -62,6 +62,9 @@
       } catch (error) {
         // Maneja el error según tus necesidades
         console.error(error);
+        if(error.response.status == 403 || error.response.status == 401) {
+          emit('sessionExpired');       
+        }
       }
     };
 

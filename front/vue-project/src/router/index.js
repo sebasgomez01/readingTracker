@@ -21,6 +21,20 @@ const router = createRouter({
         path: '/home',
         name: 'home',
         component: Home,
+        beforeEnter(to, from, next) {
+          let isAuthenticated = null; /* Your authentication check code here */
+          const token = localStorage.getItem('jwt_token');
+          if(token.startsWith("Bearer")) {
+            isAuthenticated = true;
+          } else {
+            isAuthenticated = false;
+          }
+          if (isAuthenticated) {
+            next()
+          } else {
+            next('/')
+          }
+        }
     }
   ],
 })

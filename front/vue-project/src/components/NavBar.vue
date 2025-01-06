@@ -1,6 +1,10 @@
 <script setup>
   import { ref, defineEmits } from 'vue'
   import apiClient from '@/axiosConfig';
+  import { useRouter, useRoute } from 'vue-router'
+
+  const router = useRouter()
+  const route = useRoute()
 
   // Defino los eventos que va a emitir a el componente a su padre
   const emit = defineEmits(['showLogIn', 'showRegister', 'logOut'])
@@ -23,7 +27,8 @@
     try {
       const response = await apiClient.get('/logout');
       console.log(response.status);
-      
+      localStorage.setItem('jwt_token', null);
+      router.replace('/')
     } catch(error) {
       console.error(error);
     }

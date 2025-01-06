@@ -6,18 +6,16 @@ import BookItem from './BookItem.vue'
 import apiClient from '@/axiosConfig';
 import LoadingAnimation from './LoadingAnimation.vue'
 import { useRouter, useRoute } from 'vue-router'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const router = useRouter()
 const route = useRoute()
 
-
-
-
 // La variable showModal va a controlar si se muestran o no los componentes AddItem y Modal
 // cuando uno se muestra el otro no y viceversa
-const showModal = ref(false)
+const showModal = ref(false);
 const showLoadingAnimation = ref(false);
+const emptyCollection = ref(false);
 
 // Esta variable guarda los items de la colección, es una lista de objetos con los datos de cada libro
 const collectionItems = ref([])
@@ -26,13 +24,27 @@ function modifyShowModal() {
   showModal.value = !showModal.value
 }
 
+function sessionExpired() {
+    localStorage.setItem('jwt_token', null);
+    router.replace({path: '/', query: { sessionExpired: true }});
+    console.log("Evento de sesión expirada recibido")
+}
+
 const reloadBookLIst = async() => {
   try {
     const response = await apiClient.get('/books');
     console.log(response.data);
+    
     collectionItems.value = response.data; 
+    if(collectionItems.value.length != 0) {
+      emptyCollection.value = false;
+    }
   } catch(error) {
     console.error(error);
+    console.log("Código de estado de la respuesta",error.response.status);
+    if(error.response.status == 403 || error.response.status == 401) {
+      sessionExpired();  
+    }
   }
 }
 
@@ -42,6 +54,7 @@ function saveData(data) {
   console.log(collectionItems.value)
   collectionItems.value = [...collectionItems.value, bookData]
   console.log(collectionItems.value)
+  emptyCollection.value = false;
   modifyShowModal()
 }
 
@@ -57,6 +70,10 @@ function deleteItem(id) {
   }
 
   console.log(updatedCollectionItems);
+
+  if(updatedCollectionItems.length == 0) {
+    emptyCollection.value = true;
+  }
 
   collectionItems.value = updatedCollectionItems
 } 
@@ -75,7 +92,12 @@ function updateItem(updateBook) {
 function succesfullLogin() {
   reloadBookLIst();
   showLoadingAnimation.value = true;
-  setTimeout(() => { showLoadingAnimation.value = false; }, 2000);
+  setTimeout(() => 
+    { showLoadingAnimation.value = false;
+      if(collectionItems.value.length == 0) {
+        emptyCollection.value = true;
+      }
+    }, 2000);
 }
 
 function logOutHandler() {
@@ -83,6 +105,9 @@ function logOutHandler() {
   router.replace('/');
 }
 
+onMounted(() => {
+  succesfullLogin();
+});
 </script>
 
 <template>
@@ -91,14 +116,17 @@ function logOutHandler() {
     @log-out="logOutHandler"
   />
   <AddItem @add-book="modifyShowModal" />
-  <Modal v-if="showModal" @save-data="saveData" @cancel="modifyShowModal" />
+  <Modal v-if="showModal" @save-data="saveData" @cancel="modifyShowModal" @session-expired="sessionExpired"/>
   <div id="yourCollectionDiv" >
     <h1>Your collection:</h1>
   </div>
   <LoadingAnimation v-if="showLoadingAnimation"/>
-  <h1>Your collection is currently empty</h1>
-  <div id="itemsContainer" v-if="!showLogInForm && !showRegisterForm">  
-      <BookItem v-if="!showLoadingAnimation" v-for="item in collectionItems"  v-bind="item" @delete-item="deleteItem" @update-item="updateItem" />
+  <div id="emptyCollecionMsgDiv"  v-if="emptyCollection">
+    <h1>Your collection is currently empty</h1>
+  </div>
+  <div id="itemsContainer">  
+      <BookItem v-if="!showLoadingAnimation" v-for="item in collectionItems"  v-bind="item" 
+      @delete-item="deleteItem" @update-item="updateItem" @session-expired="sessionExpired"/>
   </div>
 </template>
 
@@ -124,6 +152,11 @@ function logOutHandler() {
     border-style: none;
     height: 90%;
     padding: 10px;
+  }
+
+  #emptyCollecionMsgDiv {
+    display: flex;
+    justify-content: center;
   }
 
 </style>

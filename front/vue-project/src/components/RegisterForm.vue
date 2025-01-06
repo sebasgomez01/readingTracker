@@ -11,6 +11,7 @@
   
   const usernameError = ref(false);
   const passwordError = ref(false);
+  const userSuccesfullyCreated = ref(false);
 
   // Defino los eventos que va a emitir a el componente a su padre
   const emit = defineEmits(['getBackHome', 'goToLogIn'])
@@ -20,8 +21,7 @@
   }
 
   function goToLogInEvent() {
-    emit('goToLogIn')
-    router.replace('/')
+    router.replace('/');
   }
 
   // Manejar el envío del formulario
@@ -35,10 +35,16 @@ async function handleSubmit(event) {
   }
 
   try {
+
       console.log(userData)
       const response = await apiClient.post('/login/register', userData);
       console.log('Response:', response.data);
-      goToLogInEvent();
+      console.log(userSuccesfullyCreated.value);
+      userSuccesfullyCreated.value = true;
+      console.log(userSuccesfullyCreated.value);
+      router.replace({ path: '/', query: { success: true } });
+      //goToLogInEvent();
+
   } catch (error) {
 
       console.error('Error:', error)

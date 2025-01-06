@@ -7,7 +7,7 @@
 	const props = defineProps(['title', 'author', 'pages', 'read', 'id'])
 
 	// DEfino los eventos que va a emitir a el componente a su padre
-	const emit = defineEmits(['deleteItem', 'updateItem'])
+	const emit = defineEmits(['deleteItem', 'updateItem', 'sessionExpired'])
 
 	// me creo un ref utilizando el valor inicial del prop read, pues necesito modificarlo y los props son inmutables. Esto va a controlar los estilos y el contenido del botón read/unread 
 	const readValue = ref(props.read)
@@ -27,24 +27,22 @@
 
 	// Función para realizar la petición HTTP con el verbo DELETE para eliminar el elemento de la base de datos
 	const deleteElem = async () => {
-      try {
 		// Realizo la petición DELETE
 		apiClient.delete(`/books/${bookID}`)
 		  .then(response => {
 		    console.log('Libro eliminado correctamente', response.data);
+			deleteEvent();
 		  })
 		  .catch(error => {
 		    console.error('Error al eliminar el libro', error);
+			emit('sessionExpired');
 		  });
 
   		
         // Ejecuto la función deleteEvent que emite el evento deleteItem para que lo escuche el componente App.vue
-        deleteEvent();
        
-      } catch (error) {
-        
-        console.error(error);
-      }
+       
+      
     };
 
     // Función para realizar una petición Http Patch para modificar el estado de read
@@ -70,6 +68,7 @@
 		  })
 		  .catch(error => {
 		    console.error('Error al actualizar el libro', error);
+			emit('sessionExpired');
 	
 		  });
     	

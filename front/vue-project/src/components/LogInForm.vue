@@ -2,7 +2,7 @@
 	import axios from 'axios'
 	const API_URL = import.meta.env.VITE_API_URL;
 	import apiClient from '@/axiosConfig';
-  import { ref, defineEmits } from 'vue'
+  import { ref, defineEmits, onMounted } from 'vue'
   //import router from '../router/index.js'; ESTE IMPORT ESTÁ MAL Y NO FUNCIONA, HAY QUE USAR $router SIN IMPORTAR NADA
 
   import { useRouter, useRoute } from 'vue-router'
@@ -17,7 +17,8 @@
 	}
 
   const showLoginError = ref(false);
-
+  const showSuccessMessage = ref(false);
+  const showSessionExpiredMessage = ref(false);
 	// Defino los eventos que va a emitir a el componente a su padre
 	const emit = defineEmits(['getBackHome', 'goToRegister'])
 
@@ -43,11 +44,25 @@ async function handleSubmit(event) {
     localStorage.setItem('jwt_token', token);
     console.log('Token saved:', token);
     getBackHomeEvent();
+    router.replace('/home')
   } catch (error) {
     showLoginError.value = true;
     console.error('Error:', error)
   }
 }
+
+onMounted(() => {
+  showSessionExpiredMessage.value = false;
+
+  if (route.query.success) {
+    showSuccessMessage.value = true;
+  }
+
+  if (route.query.sessionExpired) {
+    showSessionExpiredMessage.value = true;
+  }
+
+});
 
 </script>
 
@@ -64,6 +79,9 @@ async function handleSubmit(event) {
 	        <input type="password" placeholder="Password" v-model="userData.password" required> 
 	      </label>
         <p class="errorLoginMsg" v-if="showLoginError">Username or password incorrect.Try again please.</p>
+        <p v-if="showSuccessMessage" >¡User successfully created! Now you can Log in.</p>
+        <p class="errorLoginMsg" v-if="showSessionExpiredMessage" >Your session has expired. Please log in again.</p>
+        
 	      <button type="submit"> Sign In </button>
 	      <p>Don't have an account yet? 
 	      	<a a href="#" @click="goToRegisterEvent">	Register now </a>
@@ -110,6 +128,40 @@ async function handleSubmit(event) {
 	
   .errorLoginMsg {
     color:red;
+  }
+
+  @media screen and (max-width: 480px) {
+    div {
+      height: 90%;
+    }
+
+    form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 25px;
+    width: 100%;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 10px;
+    padding: 25px;
+    } 
+  }
+
+  @media screen and (max-width: 768px) {
+    div {
+      height: 90%;
+    }
+
+    form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 25px;
+    width: 80%;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 10px;
+    padding: 25px;
+  } 
   }
   
 </style>
