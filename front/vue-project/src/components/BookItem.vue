@@ -140,4 +140,10 @@
 	    width: 90%;
 	}
 
+	@media screen and (max-width: 480px) {
+		div {
+			margin-bottom: 15px;
+		}
+	}
+
 </style>

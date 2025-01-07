@@ -119,5 +119,79 @@ async function handleSubmit(event) {
   .errorMsg {
     color: red;
   }
+
+  @media screen and (max-width: 480px) {
+    h1 {
+      font-size: 40px;
+    }
+
+    div {
+      height: 90%;
+      width: 95%;
+    }
+
+    form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 30px;
+    width: 100%;
+    border-style: none;
+    border-width: 1px;
+    border-radius: 10px;
+    padding: 0rem 1rem;
+    } 
+
+    input {
+      height: 3.5rem;
+      font-size: 28px;
+    }
+
+    input::placeholder {
+      font-size: 28px;
+      
+    }
+
+    button {
+      font-size: 30px;
+    }
+
+    p {
+      font-size: 20px;
+    }
+
+  }
+
+  @media screen and (max-width: 768px) and (min-width: 481px)  {
+    div {
+      height: 100%;
+    }
+
+    form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 25px;
+    width: 70%;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 10px;
+    padding: 25px;
+  } 
+
+  input {
+      height: 3rem;
+    }
+
+    input::placeholder {
+      font-size: 25px;
+      
+    }
+    button {
+      font-size: 25px;
+    }
+
+    p {
+      font-size: 20px;
+    }
+  }
 	
 </style>

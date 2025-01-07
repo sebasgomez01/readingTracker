@@ -139,4 +139,18 @@
   #checkboxInput {
     width: 10%;
   }
+
+
+  @media screen and (max-width: 480px) {
+    form {
+      display: flex;
+      flex-direction: column;
+      row-gap: 15px;
+      width: 90%;
+      border-style: solid;
+      border-width: 1px;
+      border-radius: 10px;
+      padding: 25px;
+    }  
+  }
 </style>

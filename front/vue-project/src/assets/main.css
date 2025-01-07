@@ -27,6 +27,20 @@ a,
   }
 }
 
+
+@media screen and (max-width: 480px) {
+  body {
+    display:flex;
+    align-items: start;
+  }
+
+  #app {
+    padding:0rem;
+    height: 100%;
+    
+  }
+}
+
 @media (min-width: 1024px) {
   body {
     display: flex;

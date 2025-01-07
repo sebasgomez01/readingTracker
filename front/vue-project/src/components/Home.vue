@@ -3,6 +3,7 @@ import NavBar from './NavBar.vue'
 import AddItem from './AddItem.vue'
 import Modal from './Modal.vue'
 import BookItem from './BookItem.vue'
+import SidebarMenu from './SidebarMenu.vue'
 import apiClient from '@/axiosConfig';
 import LoadingAnimation from './LoadingAnimation.vue'
 import { useRouter, useRoute } from 'vue-router'
@@ -16,12 +17,17 @@ const route = useRoute()
 const showModal = ref(false);
 const showLoadingAnimation = ref(false);
 const emptyCollection = ref(false);
+const showLogOutMenu = ref(false);
 
 // Esta variable guarda los items de la colección, es una lista de objetos con los datos de cada libro
 const collectionItems = ref([])
 
 function modifyShowModal() {
   showModal.value = !showModal.value
+}
+
+function modifyShowlogoutMenu() {
+  showLogOutMenu.value = !showLogOutMenu.value
 }
 
 function sessionExpired() {
@@ -114,7 +120,9 @@ onMounted(() => {
   <NavBar 
     
     @log-out="logOutHandler"
+    @show-logout-menu="modifyShowlogoutMenu"
   />
+  <SidebarMenu v-if="showLogOutMenu"  />
   <AddItem @add-book="modifyShowModal" />
   <Modal v-if="showModal" @save-data="saveData" @cancel="modifyShowModal" @session-expired="sessionExpired"/>
   <div id="yourCollectionDiv" >
@@ -158,5 +166,18 @@ onMounted(() => {
     display: flex;
     justify-content: center;
   }
+
+  @media screen and (max-width: 480px) {
+    #yourCollectionDiv, #emptyCollecionMsgDiv {
+      padding: 0rem 1rem;
+    }
+
+    #itemsContainer {
+       display: block;
+       padding:10px;
+       gap: 10px
+    }
+  }
+
 
 </style>
