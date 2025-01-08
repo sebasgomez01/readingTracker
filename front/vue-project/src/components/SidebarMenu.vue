@@ -29,18 +29,37 @@
 <template>
     <div id="sideMenu">
         <ul>
-            <li @click="handleLogOut()"><a href="#">Logout</a></li>
+            <li @click="handleLogOut()" class="custom-li">Log Out</li>
         </ul>
     </div>
 </template>
 
 <style scoped>
-    @media screen and (min-width: 480px) {
+    @media screen and (min-width: 481px) {
         
 
-    div {
-        display: none
+      div {
+          display: none
+      }
+
     }
-    }
+
+    @media screen and (max-width: 480px) {
+
+      ul {
+         /* Cambia el puntito por un cuadrado */
+          border-style: solid none;
+          border-width: 1px;
+          padding-top: 10px;
+          padding-bottom: 10px;
+      }
+      
+      .custom-li {
+        color: red; /* Cambia a cualquier color que desees */
+        cursor: pointer; /* Opcional: hace que el cursor cambie al pasar sobre el elemento */
+        text-align: start;
+        font-size: 20px;
+      }
+    } 
 
 </style>

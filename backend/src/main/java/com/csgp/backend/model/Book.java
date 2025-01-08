@@ -32,6 +32,9 @@ public class Book {
     @Column(nullable = false)
     private boolean read;
 
+    @Column(nullable = false)
+    private String savedDate;
+
     // relación manyToOne con User
     // relación con la entidad User para los posts
     @ManyToOne(fetch=FetchType.EAGER)
@@ -42,12 +45,13 @@ public class Book {
     public Book() {
     }
 
-    public Book(String title, String author, int pages, boolean read, User user) {
+    public Book(String title, String author, int pages, boolean read, String savedDate, User user) {
         super();
         this.title = title;
         this.author = author;
         this.pages = pages;
         this.read = read;
+        this.savedDate = savedDate;
         this.user = user;
     }
 
@@ -90,6 +94,14 @@ public class Book {
 
     public void setRead(boolean read) {
         this.read = read;
+    }
+
+    public void setSavedDate(String savedDate) {
+        this.savedDate = savedDate;
+    }
+
+    public String getSavedDate() {
+        return savedDate;
     }
 
     public User getUser() {

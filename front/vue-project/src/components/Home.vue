@@ -122,8 +122,8 @@ onMounted(() => {
     @log-out="logOutHandler"
     @show-logout-menu="modifyShowlogoutMenu"
   />
-  <SidebarMenu v-if="showLogOutMenu"  />
-  <AddItem @add-book="modifyShowModal" />
+  <SidebarMenu v-if="showLogOutMenu"/>
+  <AddItem v-if="!showModal" @add-book="modifyShowModal" />
   <Modal v-if="showModal" @save-data="saveData" @cancel="modifyShowModal" @session-expired="sessionExpired"/>
   <div id="yourCollectionDiv" >
     <h1>Your collection:</h1>
@@ -177,6 +177,14 @@ onMounted(() => {
        padding:10px;
        gap: 10px
     }
+  }
+
+  @media screen and (min-width: 481px) and (max-width: 768px) {    
+    #itemsContainer {
+      display: grid;
+      grid-template-columns: 50% 50%;
+      gap: 20px;
+    } 
   }
 
 

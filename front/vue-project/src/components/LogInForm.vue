@@ -36,6 +36,8 @@
   // Manejar el envío del formulario
 async function handleSubmit(event) {
   event.preventDefault() // Evita la recarga de la página
+  // limpio espaces al inicio y al final del username
+  userData.username = userData.username.trim();
   try {
     console.log(userData)
     const response = await apiClient.post('/login/authenticate', userData);

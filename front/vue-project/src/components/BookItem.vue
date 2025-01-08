@@ -4,7 +4,7 @@
 	import apiClient from '@/axiosConfig';
 
 	// Declaro los props del componente
-	const props = defineProps(['title', 'author', 'pages', 'read', 'id'])
+	const props = defineProps(['title', 'author', 'pages', 'read', 'id', 'savedDate'])
 
 	// DEfino los eventos que va a emitir a el componente a su padre
 	const emit = defineEmits(['deleteItem', 'updateItem', 'sessionExpired'])
@@ -52,7 +52,8 @@
 			author: props.author,
 			pages: props.pages,
 			read: !props.read,
-			id: bookID
+			id: props.id,
+			savedDate: props.savedDate,
 		}
 		
 		console.log(updateBook)
@@ -84,7 +85,7 @@
 		<p> {{ title }} </p>
 		<p> {{ author }}  </p>
 		<p> Pages: {{pages}} </p>
-		<p> </p>
+		<p> Saved date: {{savedDate}} </p>
 		<button @click="updateReadState" 
 		:class="{ 'read-style': readValue, 'unread-style': !readValue } "> 
 			{{ readValue ? 'Read' : 'Unread' }}       

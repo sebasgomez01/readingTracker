@@ -34,6 +34,9 @@ async function handleSubmit(event) {
     return;
   }
 
+  // limpio espaces al inicio y al final del username
+  userData.username = userData.username.trim();
+
   try {
 
       console.log(userData)

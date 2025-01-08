@@ -18,7 +18,8 @@
     author: '',
     pages: null,
     read: false,
-    id: null
+    id: null,
+    savedDate: null,
   }
 
   // función que emite el evento saveData
@@ -30,8 +31,20 @@
     author: '',
     pages: null,
     read: false,
-    id: null
+    id: null,
+    savedDate: null,
     }
+  }
+
+  function getDate() {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0'); // Día con dos dígitos
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Mes con dos dígitos (0 indexado)
+    const year = today.getFullYear(); // Año completo
+    const formattedDate = `${day}/${month}/${year}`;
+    //console.log(formattedDate); 
+    return formattedDate;
+
   }
 
 
@@ -39,9 +52,8 @@
     
     const submitForm = async () => {
       try {
-        // Obtengo los datos del formulario
-        // const formData = bookData
-
+        
+        bookData.savedDate = getDate();
         // Realizo la petición POST
         const response = await apiClient.post('/books', bookData);
       
@@ -111,7 +123,7 @@
     display: flex;
     flex-direction: column;
     row-gap: 15px;
-    width: 30%;
+    width: 50%;
     border-style: solid;
     border-width: 1px;
     border-radius: 10px;
@@ -146,11 +158,38 @@
       display: flex;
       flex-direction: column;
       row-gap: 15px;
-      width: 90%;
+      width: 100%;
+      border-style: solid none;
+      border-width: 1px;
+      border-radius: 0px;
+      padding: 25px 15px;
+    }  
+
+    input {
+      font-size: 20px;
+      padding: 5px;
+      width: 100%;
+    }
+  }
+
+  @media screen and (max-width: 768px) and (min-width: 481px) {
+    form {
+      display: flex;
+      flex-direction: column;
+      row-gap: 15px;
+      width: 60%;
       border-style: solid;
       border-width: 1px;
       border-radius: 10px;
       padding: 25px;
-    }  
+    }
+
+    input {
+      font-size: 20px;
+      padding: 5px;
+      width: 100%;
+    }
+      
   }
+
 </style>
