@@ -23,6 +23,10 @@ public class BookRestController {
         this.bookRepository = bookRepository;
     }
 
+    /*  
+        este método sirve para devolver solamente los libros del usuario autenticado en el momento
+        y no todos los libros como lo hace Spring Data Rest por defecto
+    */
     @GetMapping("/books")
     public ResponseEntity<List<Book>> getBooksForAuthenticatedUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
