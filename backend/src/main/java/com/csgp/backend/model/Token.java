@@ -24,6 +24,16 @@ public class Token {
     @JoinColumn(name = "user_id")
     private User user;
 
+    public Token() {    }
+
+    public Token(String accessToken, String refreshToken, boolean loggedOut, User user) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.loggedOut = loggedOut;
+        this.user = user;
+    }
+    
+
     public Integer getId() {
         return id;
     }

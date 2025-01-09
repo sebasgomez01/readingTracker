@@ -21,7 +21,7 @@ import com.csgp.backend.controllers.UserRestController;
 @ActiveProfiles("test") // esta anotación hizo que funcionen correctamente los tests 
 @SpringBootTest
 @AutoConfigureMockMvc
-//@Transactional esto es para limpiar la base de datos después de cada test, igual los tests funcionan correctamente sin la anotación
+@Transactional //esto es para limpiar la base de datos después de cada test, igual los tests funcionan correctamente sin la anotación
 public class UserRestControllerTests {
     @Autowired
 	private MockMvc mockMvc;
