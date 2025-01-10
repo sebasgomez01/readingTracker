@@ -14,8 +14,10 @@ public class Token {
     @Column(name = "access_token")
     private String accessToken;
 
+    /* 
     @Column(name = "refresh_token")
     private String refreshToken;
+    */
 
     @Column(name = "is_logged_out")
     private boolean loggedOut;
@@ -26,9 +28,9 @@ public class Token {
 
     public Token() {    }
 
-    public Token(String accessToken, String refreshToken, boolean loggedOut, User user) {
+    public Token(String accessToken, boolean loggedOut, User user) {
         this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
+        //this.refreshToken = refreshToken;
         this.loggedOut = loggedOut;
         this.user = user;
     }
@@ -66,6 +68,7 @@ public class Token {
         this.user = user;
     }
 
+    /*
     public String getRefreshToken() {
         return refreshToken;
     }
@@ -73,4 +76,5 @@ public class Token {
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
+    */
 }

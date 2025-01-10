@@ -14,16 +14,12 @@ import java.util.Optional;
 
 public interface TokenRepository extends CrudRepository<Token, Integer> {
 
+    Optional<Token> findByAccessToken(String token);
 
     @Query("""
     select t from Token t inner join User u on t.user.id = u.id
      where t.user.id = :userId and t.loggedOut = false""")
     List<Token> findAllAccessTokensByUser(@Param("userId") Long userId); // el @Param fue necesario para que funcionen los test que usan esta consulta
-
-    Optional<Token> findByAccessToken(String token);
-
-    Optional<Token > findByRefreshToken(String token);
-
 
     @Modifying
     @Transactional

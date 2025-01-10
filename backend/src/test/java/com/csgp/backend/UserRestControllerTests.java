@@ -41,7 +41,6 @@ public class UserRestControllerTests {
 		ResultActions result = mockMvc.perform(post("/login/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson));
-
         // Assert
         result.andExpect(status().isCreated());
     }
@@ -155,4 +154,44 @@ public class UserRestControllerTests {
         result.andExpect(status().isForbidden());
     }
 
+    @Test
+    public void testLogoutUser() throws Exception {
+        // Arrange
+        String userJson = "{\"username\":\"frodo-baggins\",\"password\":\"1234abcd\"}";
+
+		// Act
+
+		// Create User
+		mockMvc.perform(post("/login/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userJson));
+
+		// Login
+		ResultActions result = mockMvc.perform(post("/login/authenticate")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(userJson));
+
+        String token = result.andReturn().getResponse().getHeader("Authorization");
+
+        // Assert
+        result.andExpect(status().isOk())
+			.andExpect(header().exists("Authorization"))
+			.andExpect(header().string("Authorization", org.hamcrest.Matchers.startsWith("Bearer ")));
+
+        // chequeo que el token es válido
+        mockMvc.perform(get("/books")
+            .header("Authorization", token)) 
+            .andExpect(status().isOk());
+
+        // logout
+        mockMvc.perform(get("/logout")
+            .header("Authorization", token)) 
+            .andExpect(status().isOk());
+
+        // chequeo que el token ya no es válido
+        mockMvc.perform(get("/books")
+            .header("Authorization", token)) 
+            .andExpect(status().isForbidden());
+        
+    }    
 }
