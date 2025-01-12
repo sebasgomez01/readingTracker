@@ -28,8 +28,9 @@
 	}
 
 	function goToRegisterEvent() {
-	  emit('goToRegister')
-    router.replace('register')  
+	  emit('goToRegister');
+    router.replace('register');
+    console.log("evento go to register emitido")
 	}
 
 	
@@ -86,7 +87,7 @@ onMounted(() => {
         
 	      <button type="submit"> Sign In </button>
 	      <p>Don't have an account yet? 
-	      	<a a href="#" @click="goToRegisterEvent">	Register now </a>
+	      	<a class="registerLink" href="#" @click="goToRegisterEvent">	Register now </a>
  	      </p>
 	    </form>
   	</div>
