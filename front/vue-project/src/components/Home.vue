@@ -33,21 +33,21 @@ function modifyShowlogoutMenu() {
 function sessionExpired() {
     localStorage.setItem('jwt_token', null);
     router.replace({path: '/', query: { sessionExpired: true }});
-    console.log("Evento de sesión expirada recibido")
+    //console.log("Evento de sesión expirada recibido")
 }
 
 const reloadBookLIst = async() => {
   try {
     const response = await apiClient.get('/books');
-    console.log(response.data);
+    //console.log(response.data);
     
     collectionItems.value = response.data; 
     if(collectionItems.value.length != 0) {
       emptyCollection.value = false;
     }
   } catch(error) {
-    console.error(error);
-    console.log("Código de estado de la respuesta",error.response.status);
+    //console.error(error);
+    //console.log("Código de estado de la respuesta",error.response.status);
     if(error.response.status == 403 || error.response.status == 401) {
       sessionExpired();  
     }
@@ -56,10 +56,10 @@ const reloadBookLIst = async() => {
 
 function saveData(data) {
   let bookData = data
-  console.log("te saludo desde el escuchador del evento", bookData)
-  console.log(collectionItems.value)
+  //console.log("te saludo desde el escuchador del evento", bookData)
+  //console.log(collectionItems.value)
   collectionItems.value = [...collectionItems.value, bookData]
-  console.log(collectionItems.value)
+  //console.log(collectionItems.value)
   emptyCollection.value = false;
   modifyShowModal()
 }
@@ -70,12 +70,12 @@ function deleteItem(id) {
 
   // Verifica si se eliminó algún elemento
   if (updatedCollectionItems.length !== collectionItems.length) {
-    console.log(`Objeto con el id "${id}" eliminado.`);
+    //console.log(`Objeto con el id "${id}" eliminado.`);
   } else {
-    console.log(`No se encontró un objeto con el id "${id}".`);
+    //console.log(`No se encontró un objeto con el id "${id}".`);
   }
 
-  console.log(updatedCollectionItems);
+  //console.log(updatedCollectionItems);
 
   if(updatedCollectionItems.length == 0) {
     emptyCollection.value = true;
@@ -87,9 +87,9 @@ function deleteItem(id) {
 function updateItem(updateBook) {
   for(let i = 0; i < collectionItems.value.length; i++) {
     if(collectionItems.value[i].id == updateBook.id) {
-      console.log("libro actual:", collectionItems.value[i]);
+      //console.log("libro actual:", collectionItems.value[i]);
       collectionItems.value[i] = updateBook;
-      console.log("libro actualizado:", collectionItems.value[i]);
+      //console.log("libro actualizado:", collectionItems.value[i]);
     }
   }
   //collectionItems.value = updatedCollectionItems

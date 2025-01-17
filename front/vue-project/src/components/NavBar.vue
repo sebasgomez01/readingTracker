@@ -30,11 +30,11 @@
     logOutEvent();
     try {
       const response = await apiClient.get('/logout');
-      console.log(response.status);
+      //console.log(response.status);
       localStorage.setItem('jwt_token', null);
       router.replace('/')
     } catch(error) {
-      console.error(error);
+      //console.error(error);
     }
   }
 

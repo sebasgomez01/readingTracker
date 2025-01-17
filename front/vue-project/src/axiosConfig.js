@@ -6,7 +6,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 // Creo una instancia de Axios
 const apiClient = axios.create({
   baseURL: API_URL,
-  //timeout: 10000000, // Tiempo de espera opcional
+  //timeout: 10000000, // Tiempo de espera 
 });
 
 // Interceptor para agregar el token a las peticiones
@@ -29,7 +29,7 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       console.error('Unauthorized: Redirecting to login');
-      window.location.href = '/login'; // O maneja el flujo según tu lógica
+      window.location.href = '/login'; 
     }
     return Promise.reject(error);
   }

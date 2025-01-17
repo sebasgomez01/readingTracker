@@ -30,7 +30,7 @@
 	function goToRegisterEvent() {
 	  emit('goToRegister');
     router.replace('register');
-    console.log("evento go to register emitido")
+    //console.log("evento go to register emitido")
 	}
 
 	
@@ -40,17 +40,17 @@ async function handleSubmit(event) {
   // limpio espaces al inicio y al final del username
   userData.username = userData.username.trim();
   try {
-    console.log(userData)
+    //console.log(userData)
     const response = await apiClient.post('/login/authenticate', userData);
-    console.log('Response:', response);
+    //console.log('Response:', response);
 	const token = response.headers['authorization']; // O  si está en el header
     localStorage.setItem('jwt_token', token);
-    console.log('Token saved:', token);
+    //console.log('Token saved:', token);
     getBackHomeEvent();
     router.replace('/home')
   } catch (error) {
     showLoginError.value = true;
-    console.error('Error:', error)
+    //console.error('Error:', error)
   }
 }
 

@@ -1,11 +1,13 @@
 <script setup>
-  import { defineEmits } from 'vue'
+  import { defineEmits, ref } from 'vue'
   import apiClient from '@/axiosConfig';
   /* 
     Declaro los dos eventos que va a emitir el componente, saveData que se va a emitir cuando se haga click en el botón save del modal, y cancel que se va a emitir cuando se haga click en el botón 
     cancel del modal
   */
   const emit = defineEmits(['saveData', 'cancel', 'sessionExpired'])
+
+  const pagesMustBeANumberError = ref(false);
 
   // función que emite el evento cancel
   function cancelEvent() {
@@ -22,10 +24,14 @@
     savedDate: null,
   }
 
+  function isNumeric(str) {
+    return /^\d+$/.test(str);
+  }
+
   // función que emite el evento saveData
   function saveDataEvent() {
     emit('saveData', bookData)
-    console.log("hola desde el emitidor del evento", bookData)
+    //console.log("hola desde el emitidor del evento", bookData)
     bookData = {
     title: '',
     author: '',
@@ -47,10 +53,14 @@
 
   }
 
-
   // Código para hacer la petición POST al enviar el formulario 
     
     const submitForm = async () => {
+      if(!isNumeric(bookData.pages)) {
+        pagesMustBeANumberError.value = true;
+        return;
+      }
+
       try {
         
         bookData.savedDate = getDate();
@@ -58,7 +68,7 @@
         const response = await apiClient.post('/books', bookData);
       
         // Manejo la respuesta 
-        console.log(response.data);
+        //console.log(response.data);
         // Me guardo en bookData el id que le asignó la base de datos
         //id = response.data._links.self // por alguna razón no puedo realizar esta asignación, la variable aparece como undefined
         //console.log(id)
@@ -67,13 +77,9 @@
         bookData.id = response.data.id;
         // Ejecuto la función saveDataEvent que emite el evento saveData para que lo escuche el componente App.vue, y restablece los valores iniciales de bookData 
         saveDataEvent();
-
-        
-
-       
       } catch (error) {
         // Maneja el error según tus necesidades
-        console.error(error);
+        //console.error(error);
         if(error.response.status == 403 || error.response.status == 401) {
           emit('sessionExpired');       
         }
@@ -81,7 +87,14 @@
     };
 
   /* 
-    Comentario acerca de la lógica del componente: Me surge la duda de si es necesario hacer que bookData sea un ref, en mi criterio esto no es necesario y justamente busqué evitarlo para poder manejar todos los refs desde App.vue, pues no creo que sea necesario volver a renderizar cada vez que se cambien los valores del formulario, entonces lo que hago es que al enviar los datos en el evento al pulsar save establezco bookData en los valores iniciales y entonces cuando se vuelve a renderizar el formulario los campos están en blanco. ¡OJO! ESTO SOLO ES POSIBLE PORQUE EL FORMULARIO SE ESCONDE LUEGO DE ENVIAR LA INFO PUES ES UN MODAL, EN CASO DE QUE NO SEA ASÍ QUIZÁS SI SEA NECESARIO QUE bookData SEA UN REF O BUSCAR OTRA FORMA DE LIMPIAR LOS DATOS DEL FORM
+    Comentario acerca de la lógica del componente: Me surge la duda de si es necesario hacer que bookData sea un ref, 
+    en mi criterio esto no es necesario y justamente busqué evitarlo para poder manejar todos los refs desde App.vue, 
+    pues no creo que sea necesario volver a renderizar cada vez que se cambien los valores del formulario, 
+    entonces lo que hago es que al enviar los datos en el evento al pulsar save establezco bookData en los valores 
+    iniciales y entonces cuando se vuelve a renderizar el formulario los campos están en blanco. 
+    ¡OJO! ESTO SOLO ES POSIBLE PORQUE EL FORMULARIO SE ESCONDE LUEGO DE ENVIAR LA INFO PUES ES UN MODAL, 
+    EN CASO DE QUE NO SEA ASÍ QUIZÁS SI SEA NECESARIO QUE bookData SEA UN REF O BUSCAR OTRA FORMA DE LIMPIAR LOS DATOS 
+    DEL FORM
   */
 </script>
 
@@ -91,17 +104,18 @@
     <form @submit.prevent="submitForm">
       <h1>Add book</h1>
       <label>
-        <input type="text" placeholder="Title" v-model="bookData.title" >
+        <input type="text" placeholder="Title" v-model="bookData.title" required>
       </label>
       <label>
-        <input type="text" placeholder="Author" v-model="bookData.author"> 
+        <input type="text" placeholder="Author" v-model="bookData.author" required> 
       </label>
       <label>
-        <input type="text" placeholder="Pages" v-model="bookData.pages">
+        <input type="text" placeholder="Pages" v-model="bookData.pages" required>
       </label>
       <label id="checkbox">
         <input type="checkbox" v-model="bookData.read" id="checkboxInput"> Read?
       </label>
+      <p v-if="pagesMustBeANumberError">Pages must be an integer number</p>
       <button type="submit"> Save </button>
       <button @click="cancelEvent"> Cancel </button>
     </form>
@@ -150,6 +164,10 @@
 
   #checkboxInput {
     width: 10%;
+  }
+
+  p {
+    color: red;
   }
 
 

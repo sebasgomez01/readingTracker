@@ -39,19 +39,19 @@ async function handleSubmit(event) {
 
   try {
 
-      console.log(userData)
+      //console.log(userData)
       const response = await apiClient.post('/login/register', userData);
-      console.log('Response:', response.data);
-      console.log(userSuccesfullyCreated.value);
+      //console.log('Response:', response.data);
+      //console.log(userSuccesfullyCreated.value);
       userSuccesfullyCreated.value = true;
-      console.log(userSuccesfullyCreated.value);
+      //console.log(userSuccesfullyCreated.value);
       router.replace({ path: '/', query: { success: true } });
       //goToLogInEvent();
 
   } catch (error) {
 
-      console.error('Error:', error)
-      console.log('Response', error.response)
+      //console.error('Error:', error)
+      //console.log('Response', error.response)
 
       if(error.response.status == 303) {
         usernameError.value = true;

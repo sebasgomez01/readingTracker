@@ -146,7 +146,7 @@ public class UserRestControllerTests {
         String userJson = "{\"username\":\"gandalf-the-grey\",\"password\":\"youShallNotPass\"}";
 
 		// Login
-		ResultActions result = mockMvc.perform(post("/api/auth/login")
+		ResultActions result = mockMvc.perform(post("/login/authenticate")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(userJson));
 

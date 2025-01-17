@@ -30,11 +30,11 @@
 		// Realizo la petición DELETE
 		apiClient.delete(`/books/${bookID}`)
 		  .then(response => {
-		    console.log('Libro eliminado correctamente', response.data);
+		    //console.log('Libro eliminado correctamente', response.data);
 			deleteEvent();
 		  })
 		  .catch(error => {
-		    console.error('Error al eliminar el libro', error);
+		    //console.error('Error al eliminar el libro', error);
 			emit('sessionExpired');
 		  });
 
@@ -56,7 +56,7 @@
 			savedDate: props.savedDate,
 		}
 		
-		console.log(updateBook)
+		//console.log(updateBook)
 
     	// Primero actualizo los estilos del botón:
     	changeReadValue(updateBook);
@@ -64,11 +64,11 @@
 		// Realizo la petición Patch
 		apiClient.patch(`books/${bookID}`, updateBook)
 		  .then(response => {
-		    console.log('Libro actualizado correctamente', response.data);
+		    //console.log('Libro actualizado correctamente', response.data);
 		    
 		  })
 		  .catch(error => {
-		    console.error('Error al actualizar el libro', error);
+		    //console.error('Error al actualizar el libro', error);
 			emit('sessionExpired');
 	
 		  });

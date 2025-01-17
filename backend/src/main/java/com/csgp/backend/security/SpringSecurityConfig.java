@@ -45,15 +45,15 @@ public class SpringSecurityConfig {
                  .cors(withDefaults()) // agrego CORS
                  .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                  .authorizeHttpRequests(auth -> auth
-                         .requestMatchers("/login/register").permitAll()
-                         .requestMatchers("/login/authenticate").permitAll()
+                         .requestMatchers("/api/login/register").permitAll()
+                         .requestMatchers("/api/login/authenticate").permitAll()
                          .anyRequest()
                          .authenticated());
             //.requestMatchers("/admin/**").hasAuthority("ADMIN")) ;
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .logout(l->l
-                        .logoutUrl("/logout")
+                        .logoutUrl("/api/logout")
                         .addLogoutHandler(logoutHandler)
                         .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()
                         ));
